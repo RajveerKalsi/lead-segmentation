@@ -1,0 +1,20 @@
+{
+  "name": "lead-segmentation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "amazon-category-scrapper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.9.0",
+    "cheerio": "^1.0.0",
+    "papaparse": "^5.5.2",
+    "puppeteer": "^24.8.2",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}
