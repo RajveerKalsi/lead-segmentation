@@ -2,10 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const Papa = require("papaparse");
 
-const INPUT_CSV = path.join(__dirname, "data", "company_name.csv");
-const OUTPUT_CSV = path.join(__dirname, "data", "company_name_deduped.csv");
+const INPUT_CSV = path.join(__dirname, "data", "new_leads_june.csv");
+const OUTPUT_DEDUPED_CSV = path.join(__dirname, "data", "company_name_deduped.csv");
+const OUTPUT_DUPLICATES_CSV = path.join(__dirname, "data", "duplicate_company_names.csv");
 
-function removeDuplicatesFromCSV(inputPath, outputPath) {
+function removeDuplicatesFromCSV(inputPath, dedupedPath, duplicatesPath) {
   try {
     const fileContent = fs.readFileSync(inputPath, "utf8");
     const parsed = Papa.parse(fileContent, { header: true });
@@ -14,17 +15,33 @@ function removeDuplicatesFromCSV(inputPath, outputPath) {
       .map((row) => row["Company Names"]?.trim())
       .filter(Boolean);
 
-    const uniqueNames = Array.from(new Set(companyNames));
+    const seen = new Set();
+    const duplicates = new Set();
+    const uniqueNames = [];
 
-    const cleanedData = uniqueNames.map((name) => ({ "Company Names": name }));
+    for (const name of companyNames) {
+      if (seen.has(name)) {
+        duplicates.add(name);
+      } else {
+        seen.add(name);
+        uniqueNames.push(name);
+      }
+    }
 
-    const csvOutput = Papa.unparse(cleanedData, { header: true });
+    // Write deduplicated list
+    const dedupedData = uniqueNames.map((name) => ({ "Company Names": name }));
+    const dedupedCSV = Papa.unparse(dedupedData, { header: true });
+    fs.writeFileSync(dedupedPath, dedupedCSV);
+    console.log(`✅ Deduplicated list written to ${dedupedPath}`);
 
-    fs.writeFileSync(outputPath, csvOutput);
-    console.log(`Deduplicated list written to ${outputPath}`);
+    // Write duplicates list
+    const duplicateData = Array.from(duplicates).map((name) => ({ "Company Names": name }));
+    const duplicateCSV = Papa.unparse(duplicateData, { header: true });
+    fs.writeFileSync(duplicatesPath, duplicateCSV);
+    console.log(`✅ Duplicates list written to ${duplicatesPath}`);
   } catch (err) {
-    console.error("Error processing CSV:", err.message);
+    console.error("❌ Error processing CSV:", err.message);
   }
 }
 
-removeDuplicatesFromCSV(INPUT_CSV, OUTPUT_CSV);
+removeDuplicatesFromCSV(INPUT_CSV, OUTPUT_DEDUPED_CSV, OUTPUT_DUPLICATES_CSV);
