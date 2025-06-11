@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const Papa = require("papaparse");
 
-const INPUT_CSV = path.join(__dirname, "data", "new_leads_june.csv");
+const INPUT_CSV = path.join(__dirname, "data", "ICP_data_scrapping.csv");
 const OUTPUT_DEDUPED_CSV = path.join(__dirname, "data", "company_name_deduped.csv");
 const OUTPUT_DUPLICATES_CSV = path.join(__dirname, "data", "duplicate_company_names.csv");
 
